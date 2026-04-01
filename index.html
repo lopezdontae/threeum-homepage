@@ -21,6 +21,8 @@
       --ink-sub: #444444;
       --ink-dim: #888888;
       --accent: #507DBC;
+      --cursor-color: #111111;
+      --font-mono: 'SF Mono', 'Fira Code', monospace;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -30,6 +32,7 @@
         --ink-sub: #BBD1EA;
         --ink-dim: #888880;
         --accent: #507DBC;
+        --cursor-color: #507DBC;
       }
     }
 
@@ -49,6 +52,42 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       transition: background-color 0.4s, color 0.4s;
+      overflow-x: hidden;
+    }
+
+    /* ASCII canvas background */
+    #ascii-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Custom cursor */
+    @media (pointer: fine) { * { cursor: none !important; } }
+    #cursor-dot, #cursor-outline {
+      position: fixed;
+      top: 0; left: 0;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    #cursor-dot {
+      width: 6px; height: 6px;
+      background: var(--cursor-color);
+      transition: background 0.4s;
+    }
+    #cursor-outline {
+      width: 40px; height: 40px;
+      border: 1px solid var(--cursor-color);
+      transition: width 0.2s, height 0.2s, border-color 0.4s;
+    }
+    @media (max-width: 639px) {
+      #cursor-dot, #cursor-outline { display: none; }
     }
 
     .page {
@@ -59,6 +98,8 @@
       max-width: 620px;
       margin: 0 auto;
       padding: 4rem 2rem;
+      position: relative;
+      z-index: 1;
     }
 
     .company {
@@ -100,6 +141,8 @@
       width: 100%;
       margin: 0 auto;
       padding: 0 2rem 2.5rem;
+      position: relative;
+      z-index: 1;
     }
 
     .footer-links {
@@ -142,6 +185,14 @@
   </style>
 </head>
 <body>
+
+  <!-- Custom cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-outline"></div>
+
+  <!-- ASCII terrain background -->
+  <canvas id="ascii-canvas"></canvas>
+
   <div class="page">
     <div class="company">Threeum</div>
 
@@ -177,5 +228,117 @@
     </div>
     <div class="copyright">Threeum Inc. &copy; 2024 &ndash; 2026</div>
   </footer>
+
+  <script>
+    // Theme detection
+    const isDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Cursor
+    const cursorDot  = document.getElementById('cursor-dot');
+    const cursorRing = document.getElementById('cursor-outline');
+    const mPos = { x: -9999, y: -9999 };
+    const mLag = { x: 0, y: 0 };
+
+    window.addEventListener('mousemove', e => {
+      mPos.x = e.clientX; mPos.y = e.clientY;
+      cursorDot.style.left = e.clientX + 'px';
+      cursorDot.style.top  = e.clientY + 'px';
+    });
+
+    (function lagLoop() {
+      mLag.x += (mPos.x - mLag.x) * 0.15;
+      mLag.y += (mPos.y - mLag.y) * 0.15;
+      cursorRing.style.left = mLag.x + 'px';
+      cursorRing.style.top  = mLag.y + 'px';
+      requestAnimationFrame(lagLoop);
+    })();
+
+    // ASCII canvas
+    const canvas = document.getElementById('ascii-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    const density = " .'`^,:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+    const CHAR    = 12;
+    let W, H, time = 0;
+
+    function noise(x, y, t) {
+      return Math.sin(x * 0.05 + t) * Math.cos(y * 0.05 + t)
+           + Math.sin(x * 0.01 - t) * Math.cos(y * 0.12) * 0.5;
+    }
+
+    function resize() {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width  = W * dpr;
+      canvas.height = H * dpr;
+      ctx.scale(dpr, dpr);
+      canvas.style.width  = W + 'px';
+      canvas.style.height = H + 'px';
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function render() {
+      const dark = isDark();
+      const trgb = dark ? '187,209,234' : '100,100,100';
+      const lrgb = dark ? '218,227,229' : '0,0,0';
+
+      const cols = Math.ceil(W / CHAR);
+      const rows = Math.ceil(H / CHAR);
+
+      const canvasBR = canvas.getBoundingClientRect();
+      const cmx = mPos.x - canvasBR.left;
+      const cmy = mPos.y - canvasBR.top;
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.font = CHAR + 'px "SF Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const posX = x * CHAR;
+          const posY = y * CHAR;
+          const half = CHAR / 2;
+
+          const normalizedY = (rows - y) / rows;
+          const noiseVal    = noise(x, y, time * 0.5);
+          const mountainH   = 0.46 + Math.sin(x * 0.05 + time * 0.1) * 0.12 + Math.cos(x * 0.2) * 0.06;
+
+          let ch = '', alpha = 0;
+          if (normalizedY < mountainH + noiseVal * 0.1) {
+            ch    = density[Math.floor(Math.abs(noiseVal) * density.length) % density.length];
+            alpha = (1 - normalizedY * 2) * 0.12;
+          }
+
+          // Cursor lens
+          const dx   = posX - cmx;
+          const dy   = posY - cmy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 150 && dist > 0) {
+            const lensStrength = 1 - dist / 150;
+            const shiftX = (dx / dist) * 10 * lensStrength;
+            const shiftY = (dy / dist) * 10 * lensStrength;
+            if (Math.random() > 0.5) {
+              ch = Math.random() > 0.5 ? '0' : '1';
+              ctx.fillStyle = 'rgba(' + lrgb + ',' + (lensStrength * 0.25) + ')';
+            } else {
+              ctx.fillStyle = 'rgba(' + trgb + ',' + alpha + ')';
+            }
+            ctx.fillText(ch || density[1], posX + half - shiftX, posY + half - shiftY);
+          } else if (ch) {
+            ctx.fillStyle = 'rgba(' + trgb + ',' + alpha + ')';
+            ctx.fillText(ch, posX + half, posY + half);
+          }
+        }
+      }
+
+      time += 0.01;
+      requestAnimationFrame(render);
+    }
+    render();
+  </script>
 </body>
 </html>
