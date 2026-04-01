@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Threeum</title>
+  <meta name="description" content="We make biology usable.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f0f0f0;
+      --ink: #111111;
+      --ink-sub: #444444;
+      --ink-dim: #888888;
+      --accent: #507DBC;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #010306;
+        --ink: #DAE3E5;
+        --ink-sub: #BBD1EA;
+        --ink-dim: #888880;
+        --accent: #507DBC;
+      }
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.4s, color 0.4s;
+    }
+
+    .page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    .company {
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-size: 1.55rem;
+      font-weight: 400;
+      line-height: 1.4;
+      margin-bottom: 2.2rem;
+      color: var(--ink);
+    }
+
+    p {
+      font-size: 1rem;
+      color: var(--ink-sub);
+      margin-bottom: 1.5rem;
+    }
+
+    p:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .cta {
+      margin-top: 2.8rem;
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--ink);
+    }
+
+    footer {
+      max-width: 620px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 2rem 2.5rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-links a {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    .copyright {
+      font-size: 0.78rem;
+      color: var(--ink-dim);
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 3rem 1.4rem;
+      }
+
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      footer {
+        padding: 0 1.4rem 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="company">Threeum</div>
+
+    <h1>Biology is the next foundational substrate for compute, intelligence, and materials.</h1>
+
+    <p>We make biology usable. Threeum is a biological intelligence company building across three domains: biocomputing, biological intelligence, and advanced materials. This is not a research project. This is infrastructure.</p>
+
+    <p>Biology already solves problems that silicon cannot. It computes at molecular scale. It adapts without being retrained. It self-assembles, self-heals, and operates at a fraction of the energy cost. What it has never had is a production layer. We are building that layer.</p>
+
+    <p>Threeum develops biological chips, biocomputers, and the platforms that make them accessible to developers, enterprises, and institutions. Our computing console, Aperture, gives organizations access to the full biological stack. Our intelligence platform, Naos, transforms global data into localized, decision-ready insight using biological systems.</p>
+
+    <p>We approach this as an engineering challenge, not a theoretical one. Biology does not need to be understood completely to be deployed usefully. It needs to be structured, made programmable, and brought to production.</p>
+
+    <p>We are an American company headquartered in Denver, Colorado, building the foundation for what comes after silicon.</p>
+
+    <p class="cta">If you build infrastructure that lasts, we should talk.</p>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="mailto:contact@threeum.com">Contact</a>
+      <a href="https://threeum.com" target="_blank" rel="noopener">Threeum.com</a>
+    </div>
+    <div class="copyright">Threeum Inc. &copy; 2024 &ndash; 2026</div>
+  </footer>
+</body>
+</html>
